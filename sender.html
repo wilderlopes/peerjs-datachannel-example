@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="js/peerjs.js"></script>
+
+    <title>Sender</title>
+</head>
+<body>
+    <h1>Sender</h1>
+    <p>Open the browser console</p>
+    
+</body>
+<script>
+    const senderPeerID = 'sender';
+    const localPeerID = 'local-receiver';
+    const remotePeerID = 'remote-receiver';
+
+    const senderPeer = new Peer(senderPeerID, {
+      host: 'localhost',
+      port: 9000,
+      path: '/myapp'
+    });    
+
+    const localPeer = new Peer(localPeerID, {
+      host: 'localhost',
+      port: 9000,
+      path: '/myapp'
+    });    
+
+    var destinationPeerID = remotePeerID;
+
+    var conn = senderPeer.connect(destinationPeerID);
+    console.log('01. senderPeer connects to ' + destinationPeerID);
+    // on open will be launch when you successfully connect to PeerServer
+    conn.on('open', function(){
+        // here you have conn.id
+        const msg = 'hi!'
+        conn.send(msg);
+        console.log('02. senderPeer sends: ' + msg)
+    });
+
+    localPeer.on('connection', function(conn) {
+        conn.on('data', function(data){
+            // Will print 'hi!'
+            console.log("03. local peer receives from senderPeer: " + data);
+        });
+    });
+
+
+</script>
+</html>
